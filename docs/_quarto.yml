@@ -1,0 +1,6 @@
+project:
+  type: confluence
+  render:
+    - "*.qmd"
+
+toc: true
