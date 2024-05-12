@@ -30,7 +30,7 @@ x = [i * 1 / 10 for i in range(10)]
 t = [math.sin(2 * math.pi * i) + normal(scale=0.3) for i in x]
 
 print(f"x: {x}")
-print(f"t: {[f"{num:.2f}" for num in t]}")
+print(f"t: {[f'{num:.2f}' for num in t]}")
 
 plt.figure(figsize=(8, 4))
 plt.scatter(x, t)
