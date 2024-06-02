@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>カーブフィッティングを例とした機械学習の解説</title>
+<title>機械学習の基本概念の解説</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./curve-fitting.html">カーブフィッティングを例とした機械学習の解説</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./curve-fitting.html">機械学習の基本概念の解説</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -131,7 +131,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./curve-fitting.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">カーブフィッティングを例とした機械学習の解説</span></a>
+ <span class="menu-text">機械学習の基本概念の解説</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -200,7 +200,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 -->
 
 <header id="title-block-header">
-  <h1 id="title">カーブフィッティングを例とした機械学習の解説</h1>
+  <h1 id="title">機械学習の基本概念の解説</h1>
   <div id="page-properties">
     <div class="details">
       <div>Created By Author</div>
@@ -210,9 +210,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>本ページでは合成データを用いた多項式近似を例に、機械学習の基本となる以下のトピックについて解説します</p>
+<p>本ページでは線形回帰と多項式近似によるカーブフィッティングを例に、機械学習の基本となる以下のトピックについて解説します</p>
 <ul>
-<li>誤差関数</li>
+<li>誤差</li>
 <li>最小二乗法</li>
 <li>正則化</li>
 <li>ハイパーパラメータ</li>
@@ -312,9 +312,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="誤差" class="level2">
 <h2 class="anchored" data-anchor-id="誤差">誤差</h2>
 <p>直線の当てはまりの良さを定量的に調べるためには、誤差を利用します。</p>
-<p>誤差は以下の式によって表せます。</p>
+<p>今回は、最もよく利用される平均二乗誤差（Mean Squared Error）を用います。<br>
+平均二乗誤差は以下の式によって表せます。</p>
 <p><span class="math display">\[\begin{align}
-E &amp; = \frac{1}{2} \sum_i^n ( y_i - ( ax_i + b) ) \\
+E &amp; = \frac{1}{2} \sum_i^n ( y_i^2 - ( ax_i + b )^2 )
+\end{align}\]</span></p>
+<p>参考に、平均二乗誤差以外にも、以下のような平均絶対誤差（Mean Absolute Error）も存在します。</p>
+<p><span class="math display">\[\begin{align}
+E &amp; =　\sum_i^n | y_i - ( ax_i + b) |
 \end{align}\]</span></p>
 <p>これは、上の図の点線で表されるようなモデルと点に対する距離を、全てのデータについて足し合わせたものになります。</p>
 <p>この誤差が小さくなるものが、実際のデータに対して当てはまりの良いモデルであると解釈できます。</p>
@@ -323,7 +328,7 @@ E &amp; = \frac{1}{2} \sum_i^n ( y_i - ( ax_i + b) ) \\
 <section id="最小二乗法" class="level2">
 <h2 class="anchored" data-anchor-id="最小二乗法">最小二乗法</h2>
 <p>誤差を最小にするようなaとbを求める手法を最小二乗法と言います。</p>
-<p>今回の例では、赤の直線がそれに相当します。</p>
+<p>今回の例では、赤の直線のa,bに対し最小二乗法で求めた値を利用しています。</p>
 <p>最後に、aとbの値はscikit-learnライブラリのLenearRegression関数で求めることができます。</p>
 <p>以下に具体的な値を示しておきます。aが正の値になることがわかります。</p>
 <div class="cell" data-execution_count="2">
