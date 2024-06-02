@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>カーブフィッティングを例とした機械学習の解説</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./curve-fitting.html">カーブフィッティングを例とした機械学習の解説</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./curve-fitting.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">カーブフィッティングを例とした機械学習の解説</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sample.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">多項式近似による機械学習の解説</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#機械学習の基礎概念" id="toc-機械学習の基礎概念" class="nav-link active" data-scroll-target="#機械学習の基礎概念">機械学習の基礎概念</a>
+  <ul class="collapse">
+  <li><a href="#機械学習とは何か" id="toc-機械学習とは何か" class="nav-link" data-scroll-target="#機械学習とは何か">機械学習とは何か</a></li>
+  <li><a href="#教師あり学習と教師なし学習の違い" id="toc-教師あり学習と教師なし学習の違い" class="nav-link" data-scroll-target="#教師あり学習と教師なし学習の違い">教師あり学習と教師なし学習の違い</a></li>
+  </ul></li>
+  <li><a href="#回帰分析" id="toc-回帰分析" class="nav-link" data-scroll-target="#回帰分析">回帰分析</a>
+  <ul class="collapse">
+  <li><a href="#回帰分析の目的" id="toc-回帰分析の目的" class="nav-link" data-scroll-target="#回帰分析の目的">回帰分析の目的</a></li>
+  <li><a href="#身長と体重による線形回帰の例" id="toc-身長と体重による線形回帰の例" class="nav-link" data-scroll-target="#身長と体重による線形回帰の例">身長と体重による線形回帰の例</a></li>
+  <li><a href="#誤差" id="toc-誤差" class="nav-link" data-scroll-target="#誤差">誤差</a></li>
+  <li><a href="#最小二乗法" id="toc-最小二乗法" class="nav-link" data-scroll-target="#最小二乗法">最小二乗法</a></li>
+  <li><a href="#多項式近似" id="toc-多項式近似" class="nav-link" data-scroll-target="#多項式近似">多項式近似</a></li>
+  <li><a href="#誤差-1" id="toc-誤差-1" class="nav-link" data-scroll-target="#誤差-1">誤差</a></li>
+  <li><a href="#最小二乗法-1" id="toc-最小二乗法-1" class="nav-link" data-scroll-target="#最小二乗法-1">最小二乗法</a></li>
+  </ul></li>
+  <li><a href="#モデルの複雑さ" id="toc-モデルの複雑さ" class="nav-link" data-scroll-target="#モデルの複雑さ">モデルの複雑さ</a>
+  <ul class="collapse">
+  <li><a href="#多項式の次数" id="toc-多項式の次数" class="nav-link" data-scroll-target="#多項式の次数">多項式の次数</a></li>
+  <li><a href="#モデルの次数と計数の関係" id="toc-モデルの次数と計数の関係" class="nav-link" data-scroll-target="#モデルの次数と計数の関係">モデルの次数と計数の関係</a></li>
+  <li><a href="#トレーニングデータとテストデータ" id="toc-トレーニングデータとテストデータ" class="nav-link" data-scroll-target="#トレーニングデータとテストデータ">トレーニングデータとテストデータ</a></li>
+  <li><a href="#データ数と次数の関係" id="toc-データ数と次数の関係" class="nav-link" data-scroll-target="#データ数と次数の関係">データ数と次数の関係</a></li>
+  <li><a href="#モデルの汎化性能の評価" id="toc-モデルの汎化性能の評価" class="nav-link" data-scroll-target="#モデルの汎化性能の評価">モデルの汎化性能の評価</a></li>
+  </ul></li>
+  <li><a href="#正則化" id="toc-正則化" class="nav-link" data-scroll-target="#正則化">正則化</a>
+  <ul class="collapse">
+  <li><a href="#正則化とは" id="toc-正則化とは" class="nav-link" data-scroll-target="#正則化とは">正則化とは</a></li>
+  <li><a href="#正則化の方法" id="toc-正則化の方法" class="nav-link" data-scroll-target="#正則化の方法">正則化の方法</a></li>
+  <li><a href="#ハイパーパラメータ" id="toc-ハイパーパラメータ" class="nav-link" data-scroll-target="#ハイパーパラメータ">ハイパーパラメータ</a></li>
+  <li><a href="#正則化の効果" id="toc-正則化の効果" class="nav-link" data-scroll-target="#正則化の効果">正則化の効果</a></li>
+  <li><a href="#正則化パラメータの影響" id="toc-正則化パラメータの影響" class="nav-link" data-scroll-target="#正則化パラメータの影響">正則化パラメータの影響</a></li>
+  <li><a href="#正則化の強さと多項式の計数の関係" id="toc-正則化の強さと多項式の計数の関係" class="nav-link" data-scroll-target="#正則化の強さと多項式の計数の関係">正則化の強さと多項式の計数の関係</a></li>
+  <li><a href="#正則化による汎化性能の可視化" id="toc-正則化による汎化性能の可視化" class="nav-link" data-scroll-target="#正則化による汎化性能の可視化">正則化による汎化性能の可視化</a></li>
+  <li><a href="#ハイパーパラメータの調整" id="toc-ハイパーパラメータの調整" class="nav-link" data-scroll-target="#ハイパーパラメータの調整">ハイパーパラメータの調整</a></li>
+  <li><a href="#検証データセットとクロスバリデーション" id="toc-検証データセットとクロスバリデーション" class="nav-link" data-scroll-target="#検証データセットとクロスバリデーション">検証データセットとクロスバリデーション</a></li>
+  <li><a href="#クロスバリデーションの手法" id="toc-クロスバリデーションの手法" class="nav-link" data-scroll-target="#クロスバリデーションの手法">クロスバリデーションの手法</a></li>
+  <li><a href="#ハイパーパラメータの課題" id="toc-ハイパーパラメータの課題" class="nav-link" data-scroll-target="#ハイパーパラメータの課題">ハイパーパラメータの課題</a></li>
+  </ul></li>
+  <li><a href="#参考文献" id="toc-参考文献" class="nav-link" data-scroll-target="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<!-- 
+  This is the default Quarto title block header (customize as required) 
+  Learn more about Pandoc template syntax here: https://pandoc.org/MANUAL.html#templates
+-->
+
+<header id="title-block-header">
+  <h1 id="title">カーブフィッティングを例とした機械学習の解説</h1>
+  <div id="page-properties">
+    <div class="details">
+      <div>Created By Author</div>
+      <div>Yesterday at 12:00 PM • 8 min read</div>
+    </div>
+  </div>
+</header>
+
+
+<p>本ページでは合成データを用いた多項式近似を例に、機械学習の基本となる以下のトピックについて解説します</p>
+<ul>
+<li>誤差関数</li>
+<li>最小二乗法</li>
+<li>正則化</li>
+<li>ハイパーパラメータ</li>
+<li>クロスバリデーション</li>
+</ul>
+<section id="機械学習の基礎概念" class="level1">
+<h1>機械学習の基礎概念</h1>
+<section id="機械学習とは何か" class="level2">
+<h2 class="anchored" data-anchor-id="機械学習とは何か">機械学習とは何か</h2>
+<p>機械学習とは、コンピュータがデータから学習し、予測や分類などのタスクを実行する技術です 従来のプログラムとは異なり、明確なルールを人間が記述するのではなく、データを使ってモデルを訓練し、そのモデルが新しいデータに対して適切に動作するようにします</p>
+</section>
+<section id="教師あり学習と教師なし学習の違い" class="level2">
+<h2 class="anchored" data-anchor-id="教師あり学習と教師なし学習の違い">教師あり学習と教師なし学習の違い</h2>
+<p>機械学習には主に二つの学習方法があります。</p>
+<ul>
+<li><p>教師あり学習: ラベル付きデータを使用してモデルを訓練します。目的変数（ターゲット）が与えられており、モデルはそのターゲットを予測するように学習します。例として、スパムメールの判定や家の価格予測があります。また、推薦システムにおいては、ユーザーの閲覧データを使ってユーザーがどのアイテムを好むかを予測します</p></li>
+<li><p>教師なし学習: ラベルなしデータを使用してモデルを訓練します。目的変数がないため、データの構造やパターンを見つけ出すことが主な目的です。例として、クラスタリングや次元削減、強調フィルタリングがあります</p></li>
+</ul>
+<p>今回は、機械学習の基本概念を理解することに適している教師あり学習を扱います。</p>
+</section>
+</section>
+<section id="回帰分析" class="level1">
+<h1>回帰分析</h1>
+<section id="回帰分析の目的" class="level2">
+<h2 class="anchored" data-anchor-id="回帰分析の目的">回帰分析の目的</h2>
+<p>回帰分析の目的は、説明変数（特徴量）と目的変数（ターゲット）の関係をモデル化し、新しいデータに対して目的変数を予測することです。特に、線形回帰や多項式回帰などの手法が存在します。</p>
+<p>以下では、線形回帰と多項式回帰を例を通して確認します。</p>
+</section>
+<section id="身長と体重による線形回帰の例" class="level2">
+<h2 class="anchored" data-anchor-id="身長と体重による線形回帰の例">身長と体重による線形回帰の例</h2>
+<p>身長と体重の関係を求める線形回帰の例を見てみます。</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="im">import</span> japanize_matplotlib</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="co"># サンプルデータ生成</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>heights <span class="op">=</span> np.random.normal(<span class="dv">170</span>, <span class="dv">10</span>, <span class="dv">50</span>)  <span class="co"># 身長: 平均170cm, 標準偏差10cm</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>weights <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> heights <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">50</span>)  <span class="co"># 体重: 身長に比例（ノイズ追加）</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co"># 回帰分析</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb1-13"><a href="#cb1-13"></a>heights_reshaped <span class="op">=</span> heights.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>model.fit(heights_reshaped, weights)</span>
+<span id="cb1-15"><a href="#cb1-15"></a>predicted_weights <span class="op">=</span> model.predict(heights_reshaped)</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="co"># 当てはまらない直線</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>incorrect_slope <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>incorrect_intercept <span class="op">=</span> <span class="dv">120</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>incorrect_weights <span class="op">=</span> incorrect_slope <span class="op">*</span> heights <span class="op">+</span> incorrect_intercept</span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="co"># 一番右端の点</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>max_height <span class="op">=</span> heights.<span class="bu">max</span>()</span>
+<span id="cb1-24"><a href="#cb1-24"></a>max_height_index <span class="op">=</span> np.argmax(heights)</span>
+<span id="cb1-25"><a href="#cb1-25"></a>actual_weight <span class="op">=</span> weights[max_height_index]</span>
+<span id="cb1-26"><a href="#cb1-26"></a>predicted_weight <span class="op">=</span> predicted_weights[max_height_index]</span>
+<span id="cb1-27"><a href="#cb1-27"></a>incorrect_weight <span class="op">=</span> incorrect_weights[max_height_index]</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="co"># グラフ作成</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb1-31"><a href="#cb1-31"></a>plt.scatter(heights, weights, color<span class="op">=</span><span class="st">'blue'</span>, label<span class="op">=</span><span class="st">'サンプルデータ'</span>)</span>
+<span id="cb1-32"><a href="#cb1-32"></a>plt.plot(heights, predicted_weights, color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'回帰直線'</span>)</span>
+<span id="cb1-33"><a href="#cb1-33"></a>plt.plot(heights, incorrect_weights, color<span class="op">=</span><span class="st">'green'</span>, label<span class="op">=</span><span class="st">'当てはまらない直線'</span>)</span>
+<span id="cb1-34"><a href="#cb1-34"></a></span>
+<span id="cb1-35"><a href="#cb1-35"></a><span class="co"># 一番右端の点の誤差を表示</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a>plt.plot([max_height<span class="op">-</span><span class="fl">.3</span>, max_height<span class="op">-</span><span class="fl">.3</span>], [actual_weight, predicted_weight], color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, label<span class="op">=</span><span class="st">'回帰直線との誤差'</span>)</span>
+<span id="cb1-37"><a href="#cb1-37"></a>plt.plot([max_height, max_height], [actual_weight, incorrect_weight], color<span class="op">=</span><span class="st">'green'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'当てはまらない直線との誤差'</span>)</span>
+<span id="cb1-38"><a href="#cb1-38"></a></span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="co"># グラフのラベルとタイトル</span></span>
+<span id="cb1-40"><a href="#cb1-40"></a>plt.xlabel(<span class="st">'身長 (cm)'</span>)</span>
+<span id="cb1-41"><a href="#cb1-41"></a>plt.ylabel(<span class="st">'体重 (kg)'</span>)</span>
+<span id="cb1-42"><a href="#cb1-42"></a>plt.title(<span class="st">'身長と体重の回帰分析'</span>)</span>
+<span id="cb1-43"><a href="#cb1-43"></a>plt.legend()</span>
+<span id="cb1-44"><a href="#cb1-44"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb1-45"><a href="#cb1-45"></a></span>
+<span id="cb1-46"><a href="#cb1-46"></a><span class="co"># グラフ表示</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="curve-fitting_files/figure-html/cell-2-output-1.png" width="816" height="524"></p>
+</div>
+</div>
+<p>図では、1人の身長・体重が１つの点として表現されています。説明変数xが身長、目的変数yが体重となります。</p>
+<p>回帰分析ではxとyに以下のような関係式が成り立つと仮定します。</p>
+<p><span class="math display">\[\begin{align}
+  y = ax + b
+\end{align}\]</span></p>
+<p>上の式のように、説明変数と目的変数を数式で表現したものをモデルと言います。</p>
+<p>そして、回帰分析ではaとbを求めることを目的とし、それにより決定されたモデルを用いて未知のデータに対して予測を行います。</p>
+<p>上の図の赤と緑の直線は、それぞれ異なる(a, b)の値を持つ直線の例です。</p>
+<p>どちらの方が、よりモデルとして適しているでしょうか確認しましょう。</p>
+<p>今回扱っている例では、身長が増えると体重も増える傾向にあります。</p>
+<p>そのため、a&gt;0であることが予想できるため、赤い直線の方が当てはまりの良いことが感覚としてわかると思います。</p>
+<p>以下では、この「当てはまりの良さ」を定量的に扱うための誤差について説明します。</p>
+</section>
+<section id="誤差" class="level2">
+<h2 class="anchored" data-anchor-id="誤差">誤差</h2>
+<p>直線の当てはまりの良さを定量的に調べるためには、誤差を利用します。</p>
+<p>誤差は以下の式によって表せます。</p>
+<p><span class="math display">\[\begin{align}
+E &amp; = \frac{1}{2} \sum_i^n ( y_i - ( ax_i + b) ) \\
+\end{align}\]</span></p>
+<p>これは、上の図の点線で表されるようなモデルと点に対する距離を、全てのデータについて足し合わせたものになります。</p>
+<p>この誤差が小さくなるものが、実際のデータに対して当てはまりの良いモデルであると解釈できます。</p>
+<p>例として、右端の１つの点についての誤差を点線で示しています。赤の直線の方が緑の直線よりも誤差が小さくなることがわかると思います。</p>
+</section>
+<section id="最小二乗法" class="level2">
+<h2 class="anchored" data-anchor-id="最小二乗法">最小二乗法</h2>
+<p>誤差を最小にするようなaとbを求める手法を最小二乗法と言います。</p>
+<p>今回の例では、赤の直線がそれに相当します。</p>
+<p>最後に、aとbの値はscikit-learnライブラリのLenearRegression関数で求めることができます。</p>
+<p>以下に具体的な値を示しておきます。aが正の値になることがわかります。</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">print</span>(<span class="ss">f"回帰直線の係数 a: </span><span class="sc">{</span>model<span class="sc">.</span>coef_[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="ss">, 切片 b: </span><span class="sc">{</span>model<span class="sc">.</span>intercept_<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>回帰直線の係数 a: 0.48, 切片 b: 3.80</code></pre>
+</div>
+</div>
+</section>
+<section id="多項式近似" class="level2">
+<h2 class="anchored" data-anchor-id="多項式近似">多項式近似</h2>
+<p>次に、説明変数と目的変数の関係が直線で表せないようなより複雑な例を見てみます。</p>
+<p>今回はモデルを決定する（係数を決定する）ために最小二乗法を用います。</p>
+<p>主な目標は、与えられたデータからどのような関数関係が存在するかを推測することです</p>
+<p>データはsin関数から生成していますが、そのことは知らないものとしてxとtの関数として多項式を仮定します</p>
+<p>今回は、特徴量xと目的変数tの間に多項式の関係があると仮定します</p>
+<!-- \begin{align} 
+  f(x) & = \omega_0 + \omega_1x + \omega_2x^2 + \cdots + \omega_Mx^M \\
+       & = \sum_{m=0}^{M}w_mx^m
+\end{align} -->
+<p><img src="./img/math/equation1.png" class="img-fluid"></p>
+<p>Mは多項式の次数で、モデルの複雑さに関係します</p>
+<p>w_1までを用いると、先ほどの回帰分析で用いたモデルと等しくなります。</p>
+<p>wの値としてどのような値に決めると良いかは後ほど議論します</p>
+</section>
+<section id="誤差-1" class="level2">
+<h2 class="anchored" data-anchor-id="誤差-1">誤差</h2>
+<p>先ほど回帰分析の例で見ました通り、モデルにより計算される値と実際に観測された値の差を表す関数を誤差と言います</p>
+<p>今回は、多項式で計算される値<span class="math inline">\(f(x)\)</span>と実際に観測された値<span class="math inline">\(t_n\)</span>の差の二乗を全てのデータについて和をとったものを誤差として利用し、特にこのような誤差を平均二乗誤差（Root Mean Squared Error）と言います。</p>
+<!-- \begin{align}
+E & = \frac{1}{2} \left( (f(x_1) - t_1)^2 + (f(x_2) - t_2)^2 + \cdots + (f(x_{10}) - t_{10})^2 \right) \\
+  & = \frac{1}{2} \sum_{n=1}^{N}(f(x_n) - t_n)^2 \\
+  & = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2 
+\end{align} -->
+<p><img src="./img/math/equation2.png" class="img-fluid"></p>
+<p><img src="img/Figure_5.png" class="img-fluid"></p>
+<p>誤差関数が大きいということは、多項式が実際の観測値を表現できていないことになります</p>
+<p>逆に、誤差関数を最小になれば、多項式は実際の観測値を推測できるということになります</p>
+<p>そのために、誤差関数を最小にするような多項式の係数<span class="math inline">\(w\)</span>を求めることが目的になります</p>
+</section>
+<section id="最小二乗法-1" class="level2">
+<h2 class="anchored" data-anchor-id="最小二乗法-1">最小二乗法</h2>
+<p>上で述べた、誤差を最小化する係数を求める方法を誤差関数が二乗の形式で表されていることから、最小二乗法と言います</p>
+<p>具体的には、以下の偏微分方程式を解きます</p>
+<!-- \begin{align}
+\frac{\partial E}{\partial w_m} = 0 \quad (m = 0, \cdots , M)
+\end{align} -->
+<p><img src="./img/math/equation3.png" class="img-fluid"></p>
+<p>今回はこの式を解くことはせずに上式を解いた結果、多項式を最小にする係数<span class="math inline">\({w}\)</span>が得られているものとして話を進めます</p>
+<p>TensorFlow, PyTorchといったライブラリでは、自動微分という機能が搭載されており、ユーザーが関数を指定するだけで内部的に偏微分の計算を行なってくれます</p>
+</section>
+</section>
+<section id="モデルの複雑さ" class="level1">
+<h1>モデルの複雑さ</h1>
+<p>以下では、多項式を定義する際に出てきた、次数Mとモデルの複雑さの関係について説明します</p>
+<section id="多項式の次数" class="level2">
+<h2 class="anchored" data-anchor-id="多項式の次数">多項式の次数</h2>
+<p>多項式の次数Mは、モデル選択に関連しています</p>
+<p>次数Mがモデルの性能にどのように影響するかを理解するために、次数 M = 0, 3, 9の場合について比較をします</p>
+<ul>
+<li>次数の低い多項式
+<ul>
+<li>M = 0（定数）と M = 1（1次式）の多項式は、データに対して適合性が低く、sin関数 をうまく表現できません</li>
+<li><img src="img/Figure_6_a.png" class="img-fluid"></li>
+<li><img src="img/Figure_6_b.png" class="img-fluid"></li>
+</ul></li>
+<li>中程度の次数の多項式
+<ul>
+<li>M = 3 の多項式は、示された例で sin関数に最も適合しており、データと良好なバランスを示しています</li>
+<li><img src="img/Figure_6_c.png" class="img-fluid"></li>
+</ul></li>
+<li>高次の多項式
+<ul>
+<li>M = 9 とすると、トレーニングデータに対しては非常によくフィットしますが、過適合（オーバーフィッティング）の問題が生じます。この多項式は訓練データの各点を正確に通過しますが、データ点間で関数が大きく振動します</li>
+<li><img src="img/Figure_6_d.png" class="img-fluid"></li>
+</ul></li>
+</ul>
+</section>
+<section id="モデルの次数と計数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="モデルの次数と計数の関係">モデルの次数と計数の関係</h2>
+<p>モデルの次数と計数の関係は以下のようになります</p>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 10%">
+<col style="width: 18%">
+<col style="width: 27%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>係数</th>
+<th>M = 0</th>
+<th>M = 1</th>
+<th>M = 3</th>
+<th>M = 9</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(w_0\)</span></td>
+<td>0.11</td>
+<td>0.90</td>
+<td>0.12</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_1\)</span></td>
+<td></td>
+<td>-1.58</td>
+<td>11.20</td>
+<td>-66.13</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_2\)</span></td>
+<td></td>
+<td></td>
+<td>-33.67</td>
+<td>1,665.69</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_3\)</span></td>
+<td></td>
+<td></td>
+<td>22.43</td>
+<td>-15,566.61</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_4\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>76,321.23</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_5\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>-217,389.15</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_6\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>370,626.48</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_7\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>-372,051.47</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_8\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>202,540.70</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_9\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td>-46,080.94</td>
+</tr>
+</tbody>
+</table>
+<p>M=9の場合、係数が大きいことがわかります</p>
+</section>
+<section id="トレーニングデータとテストデータ" class="level2">
+<h2 class="anchored" data-anchor-id="トレーニングデータとテストデータ">トレーニングデータとテストデータ</h2>
+<p>次数M=9の場合、多項式はトレーニングデータに対してはよくフィットしますが、未知のデータに対してフィットしないと思われます</p>
+<p>このことを確認するために、トレーニングデータとテストデータを分割する方法が用いられます</p>
+<p>事前に得られたデータをトレーニングデータとテストデータに分けておき学習はトレーニングデータのみを利用して行い、未知データへの当てはまりは、テストデータを用いて確認します</p>
+</section>
+<section id="データ数と次数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="データ数と次数の関係">データ数と次数の関係</h2>
+<p>以下は、次数M=9でデータが少ない場合と多い場合を比較したものです</p>
+<p>N = 15 <img src="img/Figure_8_a.png" class="img-fluid"></p>
+<p>N = 100 <img src="img/Figure_8_b.png" class="img-fluid"></p>
+<p>次数が高い場合でもデータが多ければ、特徴量と目的変数の関係が捉えられています</p>
+</section>
+<section id="モデルの汎化性能の評価" class="level2">
+<h2 class="anchored" data-anchor-id="モデルの汎化性能の評価">モデルの汎化性能の評価</h2>
+<p>汎化性能とは、トレーニングデータで利用していない未知のデータに対する予測性能のことを言います<br>
+先ほど見た通り、多項式の次数 <span class="math inline">\(M\)</span> により汎化性能が変化します<br>
+このことを確認するために、テストセットで未見データのモデル挙動を観察します</p>
+<ul>
+<li><p>性能評価方法 テストセット上で <span class="math inline">\(E(w^*)\)</span> を計算します<br>
+誤差<span class="math inline">\(E(w^*)\)</span> はテストデータ適合度を示し、小さい<span class="math inline">\(E(w^*)\)</span>は高い汎化性能を意味します</p></li>
+<li><p>平均二乗根誤差（RMS Error）</p></li>
+</ul>
+<!-- \begin{align}
+\text{RMS Error} = \sqrt{\frac{1}{N} \sum_{n=1}^{N} (y(x_n, w^*) - t_n)^2}
+\end{align} -->
+<p><img src="./img/math/equation4.png" class="img-fluid"></p>
+<ul>
+<li>N: テストデータ数</li>
+<li><span class="math inline">\(y(x_n, w^*)\)</span>: 予測値, <span class="math inline">\(t_n\)</span>: 実際の目標値</li>
+</ul>
+<p>RMSエラーが小さいほど予測精度が高いことを意味します</p>
+<ul>
+<li>性能評価の視覚化
+<ul>
+<li>図1.7: <span class="math inline">\(M\)</span>の異なる値でのトレーニングセットとテストセットの誤差をグラフ化 <img src="img/Figure_7.png" class="img-fluid"></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="正則化" class="level1">
+<h1>正則化</h1>
+<p>上では、データの数によりフィティングの性能が変わるということをみました<br>
+以下では別の方法として、正則化により過適合を避ける方法を確認します</p>
+<section id="正則化とは" class="level2">
+<h2 class="anchored" data-anchor-id="正則化とは">正則化とは</h2>
+<ul>
+<li>モデルのパラメータ数を単に制限する代わりに、問題の複雑さに合わせてモデルの複雑さを調整する方法です</li>
+<li>正則化は、誤差関数にペナルティ項を追加することで、係数の大きさを抑制し、過適合を防ぎます</li>
+</ul>
+<p>正則化は、大きな係数に対して誤差のペナルティを課す方法で、誤差関数に対して係数の大きさに応じた項を加えることで実現します</p>
+</section>
+<section id="正則化の方法" class="level2">
+<h2 class="anchored" data-anchor-id="正則化の方法">正則化の方法</h2>
+<p>正則化された誤差関数は次のように表されます</p>
+<!-- \begin{align}
+E_{\text{reg}}(w) = \sum_{n=1}^{N} (y(x_n, w) - t_n)^2 + \lambda \sum_{j=0}^{M} w_j^2
+\end{align} -->
+<p><img src="./img/math/equation5.png" class="img-fluid"></p>
+<p>ここで <span class="math inline">\(\lambda\)</span> は正則化の強さを調整するパラメータです</p>
+</section>
+<section id="ハイパーパラメータ" class="level2">
+<h2 class="anchored" data-anchor-id="ハイパーパラメータ">ハイパーパラメータ</h2>
+<p><span class="math inline">\(\lambda\)</span>やMは、最小二乗法により多項式の係数<span class="math inline">\(\omega\)</span>を計算する際には固定します</p>
+<p>これらのパラメータの値は、テストデータの誤差を最小にするものに決定します</p>
+<p>このようなパラメータのことをハイパーパラメータと言い、モデルによって様々なものが存在します</p>
+<p><a href="https://console.cloud.google.com/vertex-ai/experiments/locations/us-central1/experiments/two-tower-train/runs/two-tower-train-run-20240512020226/parameters?hl=ja&amp;project=hardy-tenure-240602">TwoTowerモデルでのハイパーパラメータの例</a></p>
+</section>
+<section id="正則化の効果" class="level2">
+<h2 class="anchored" data-anchor-id="正則化の効果">正則化の効果</h2>
+<p>正則化を利用することで、<span class="math inline">\(M = 9\)</span>のような高次多項式でも過適合が抑えられるようになります<br>
+<span class="math inline">\(\lambda\)</span> の値を調整することで、モデルの適合度と汎化能力のバランスを取ります<br>
+<span class="math inline">\(\ln\lambda=-\infty\)</span>の場合、<span class="math inline">\(\lambda=0\)</span>となり、正則化が行われないことを意味します</p>
+</section>
+<section id="正則化パラメータの影響" class="level2">
+<h2 class="anchored" data-anchor-id="正則化パラメータの影響">正則化パラメータの影響</h2>
+<p><span class="math inline">\(\lambda\)</span>の異なる値によるフィッティングの比較</p>
+<ul>
+<li><span class="math inline">\(\ln\lambda = -18\)</span>で適切なフィッティングが得られ、過適合が抑制されています</li>
+</ul>
+<p><img src="img/Figure_9_a.png" class="img-fluid"></p>
+<ul>
+<li><span class="math inline">\(\ln\lambda = 0\)</span>の場合は、正則化が強すぎるためモデルの係数が小さく抑えられ、データの特徴を捉えられていません</li>
+</ul>
+<p><img src="img/Figure_9_b.png" class="img-fluid"></p>
+<ul>
+<li><span class="math inline">\(\lambda = -\infty\)</span> (正則化なし)の場合はフィッティングが不十分で、過適合が目立ちます</li>
+</ul>
+<p><img src="img/Figure_6_d.png" class="img-fluid"></p>
+</section>
+<section id="正則化の強さと多項式の計数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="正則化の強さと多項式の計数の関係">正則化の強さと多項式の計数の関係</h2>
+<p>次数M = 9の場合の正則化パラメータと係数の関係を以下に示します</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Coefficient</th>
+<th>lnλ=-∞</th>
+<th>lnλ=-18</th>
+<th>lnλ=0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>w₀⋆</td>
+<td>0.26</td>
+<td>0.26</td>
+<td>0.11</td>
+</tr>
+<tr class="even">
+<td>w₁⋆</td>
+<td>-66.13</td>
+<td>0.64</td>
+<td>-0.07</td>
+</tr>
+<tr class="odd">
+<td>w₂⋆</td>
+<td>1,665.69</td>
+<td>43.68</td>
+<td>-0.09</td>
+</tr>
+<tr class="even">
+<td>w₃⋆</td>
+<td>-15,566.61</td>
+<td>-144.00</td>
+<td>-0.07</td>
+</tr>
+<tr class="odd">
+<td>w₄⋆</td>
+<td>76,321.23</td>
+<td>57.90</td>
+<td>-0.05</td>
+</tr>
+<tr class="even">
+<td>w₅⋆</td>
+<td>-217,389.15</td>
+<td>117.36</td>
+<td>-0.04</td>
+</tr>
+<tr class="odd">
+<td>w₆⋆</td>
+<td>370,626.48</td>
+<td>9.87</td>
+<td>-0.02</td>
+</tr>
+<tr class="even">
+<td>w₇⋆</td>
+<td>-372,051.47</td>
+<td>-90.02</td>
+<td>-0.01</td>
+</tr>
+<tr class="odd">
+<td>w₈⋆</td>
+<td>202,540.70</td>
+<td>-70.90</td>
+<td>-0.01</td>
+</tr>
+<tr class="even">
+<td>w₉⋆</td>
+<td>-46,080.94</td>
+<td>75.26</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\ln\lambda=-\infty\)</span>(正則化なし)の場合は係数の値が大きく、逆に<span class="math inline">\(\ln\lambda=0\)</span>の場合は係数の値が小さいことが分かります</p>
+</section>
+<section id="正則化による汎化性能の可視化" class="level2">
+<h2 class="anchored" data-anchor-id="正則化による汎化性能の可視化">正則化による汎化性能の可視化</h2>
+<p>訓練データとテストデータにおける平均二乗根誤差（RMSエラー）を 正則化の強さ<span class="math inline">\(\ln\lambda\)</span>に対してプロット</p>
+<p>以下の図はRMSエラーの <span class="math inline">\(\ln(\lambda)\)</span>に対するグラフで、正則化の強さが汎化エラーに与える影響を示します <img src="img/Figure_10.png" class="img-fluid"></p>
+<p>正則化が強いほど汎化性能は上がりますが、強すぎるとデータの適合度が損なわれます</p>
+</section>
+<section id="ハイパーパラメータの調整" class="level2">
+<h2 class="anchored" data-anchor-id="ハイパーパラメータの調整">ハイパーパラメータの調整</h2>
+<p>これまで、テストデータセットでハイパーパラメータ <span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> の性能を確認しました しかし、ハイパーパラメータを最適化するためには、テストデータとは別に検証データセットを用意することが一般的です 適切な <span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> の値を見つけるためには、検証セット上でのエラーが最も低いモデルを選択します その後、テストデータを用いて最終的なモデルの評価を行います</p>
+</section>
+<section id="検証データセットとクロスバリデーション" class="level2">
+<h2 class="anchored" data-anchor-id="検証データセットとクロスバリデーション">検証データセットとクロスバリデーション</h2>
+<p>データをトレーニングセットと検証データセットに分け、検証セットを使用してモデルの汎化能力を評価します<br>
+クロスバリデーションは、データを複数のサブセットに分け、それぞれのサブセットでモデルを訓練し、残りのサブセットでテストすることで、モデルの汎化性能を確認します</p>
+</section>
+<section id="クロスバリデーションの手法" class="level2">
+<h2 class="anchored" data-anchor-id="クロスバリデーションの手法">クロスバリデーションの手法</h2>
+<p>S-foldクロスバリデーションでは、データを <span class="math inline">\(S\)</span> グループに分け、<span class="math inline">\(S-1\)</span> グループを使用して訓練し、残った1グループで性能を評価します。このプロセスを繰り返して、平均的なモデル性能を得ます<br>
+以下の図における赤い部分が検証データを表します <img src="img/Figure_11.png" class="img-fluid"></p>
+</section>
+<section id="ハイパーパラメータの課題" class="level2">
+<h2 class="anchored" data-anchor-id="ハイパーパラメータの課題">ハイパーパラメータの課題</h2>
+<p>大規模なモデルやデータセットでは、ハイパーパラメータの選択肢が多く、最適な設定を見つけるのが困難です<br>
+モデルの訓練が計算コストが高い場合、クロスバリデーションを含む多くの訓練コストが必要になることがあります</p>
+</section>
+</section>
+<section id="参考文献" class="level1">
+<h1>参考文献</h1>
+<ul>
+<li>Bishop, C. M., &amp; Bishop, H. (2024). Deep Learning: Foundations and Concepts. Springer</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
