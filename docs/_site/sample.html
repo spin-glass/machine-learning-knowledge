@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>最小二乗法</title>
+<title>多項式近似による機械学習の解説</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,7 +142,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sample.html">最小二乗法</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sample.html">多項式近似による機械学習の解説</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -165,7 +165,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sample.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">最小二乗法</span></a>
+ <span class="menu-text">多項式近似による機械学習の解説</span></a>
   </div>
 </li>
     </ul>
@@ -179,6 +179,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#合成データ" id="toc-合成データ" class="nav-link active" data-scroll-target="#合成データ">合成データ</a></li>
+  <li><a href="#回帰分析" id="toc-回帰分析" class="nav-link" data-scroll-target="#回帰分析">回帰分析</a></li>
   <li><a href="#最小二乗法" id="toc-最小二乗法" class="nav-link" data-scroll-target="#最小二乗法">最小二乗法</a>
   <ul class="collapse">
   <li><a href="#多項式近似" id="toc-多項式近似" class="nav-link" data-scroll-target="#多項式近似">多項式近似</a></li>
@@ -188,19 +189,22 @@ window.Quarto = {
   <li><a href="#モデルの複雑さ" id="toc-モデルの複雑さ" class="nav-link" data-scroll-target="#モデルの複雑さ">モデルの複雑さ</a>
   <ul class="collapse">
   <li><a href="#多項式の次数" id="toc-多項式の次数" class="nav-link" data-scroll-target="#多項式の次数">多項式の次数</a></li>
+  <li><a href="#モデルの次数と計数の関係" id="toc-モデルの次数と計数の関係" class="nav-link" data-scroll-target="#モデルの次数と計数の関係">モデルの次数と計数の関係</a></li>
   <li><a href="#トレーニングデータとテストデータ" id="toc-トレーニングデータとテストデータ" class="nav-link" data-scroll-target="#トレーニングデータとテストデータ">トレーニングデータとテストデータ</a></li>
-  <li><a href="#統計モデルとdeeplearning" id="toc-統計モデルとdeeplearning" class="nav-link" data-scroll-target="#統計モデルとdeeplearning">統計モデルとDeepLearning</a></li>
+  <li><a href="#データ数と次数の関係" id="toc-データ数と次数の関係" class="nav-link" data-scroll-target="#データ数と次数の関係">データ数と次数の関係</a></li>
   <li><a href="#モデルの汎化性能の評価" id="toc-モデルの汎化性能の評価" class="nav-link" data-scroll-target="#モデルの汎化性能の評価">モデルの汎化性能の評価</a></li>
   </ul></li>
   <li><a href="#正則化" id="toc-正則化" class="nav-link" data-scroll-target="#正則化">正則化</a>
   <ul class="collapse">
   <li><a href="#正則化とは" id="toc-正則化とは" class="nav-link" data-scroll-target="#正則化とは">正則化とは</a></li>
   <li><a href="#正則化の方法" id="toc-正則化の方法" class="nav-link" data-scroll-target="#正則化の方法">正則化の方法</a></li>
+  <li><a href="#ハイパーパラメータ" id="toc-ハイパーパラメータ" class="nav-link" data-scroll-target="#ハイパーパラメータ">ハイパーパラメータ</a></li>
   <li><a href="#正則化の効果" id="toc-正則化の効果" class="nav-link" data-scroll-target="#正則化の効果">正則化の効果</a></li>
   <li><a href="#正則化パラメータの影響" id="toc-正則化パラメータの影響" class="nav-link" data-scroll-target="#正則化パラメータの影響">正則化パラメータの影響</a></li>
+  <li><a href="#正則化の強さと多項式の計数の関係" id="toc-正則化の強さと多項式の計数の関係" class="nav-link" data-scroll-target="#正則化の強さと多項式の計数の関係">正則化の強さと多項式の計数の関係</a></li>
   <li><a href="#正則化による汎化性能の可視化" id="toc-正則化による汎化性能の可視化" class="nav-link" data-scroll-target="#正則化による汎化性能の可視化">正則化による汎化性能の可視化</a></li>
   <li><a href="#ハイパーパラメータの調整" id="toc-ハイパーパラメータの調整" class="nav-link" data-scroll-target="#ハイパーパラメータの調整">ハイパーパラメータの調整</a></li>
-  <li><a href="#検証セットとクロスバリデーション" id="toc-検証セットとクロスバリデーション" class="nav-link" data-scroll-target="#検証セットとクロスバリデーション">検証セットとクロスバリデーション</a></li>
+  <li><a href="#検証データセットとクロスバリデーション" id="toc-検証データセットとクロスバリデーション" class="nav-link" data-scroll-target="#検証データセットとクロスバリデーション">検証データセットとクロスバリデーション</a></li>
   <li><a href="#クロスバリデーションの手法" id="toc-クロスバリデーションの手法" class="nav-link" data-scroll-target="#クロスバリデーションの手法">クロスバリデーションの手法</a></li>
   <li><a href="#ハイパーパラメータの課題" id="toc-ハイパーパラメータの課題" class="nav-link" data-scroll-target="#ハイパーパラメータの課題">ハイパーパラメータの課題</a></li>
   </ul></li>
@@ -217,7 +221,7 @@ window.Quarto = {
 -->
 
 <header id="title-block-header">
-  <h1 id="title">最小二乗法</h1>
+  <h1 id="title">多項式近似による機械学習の解説</h1>
   <div id="page-properties">
     <div class="details">
       <div>Created By Author</div>
@@ -228,36 +232,21 @@ window.Quarto = {
 
 
 
-<p>本ページでは合成データを用いた最小二乗法を例に、機械学習の基本となる以下のトピックについて解説します</p>
+<p>本ページでは合成データを用いた多項式近似を例に、機械学習の基本となる以下のトピックについて解説します</p>
 <ul>
-<li>誤差関数
-<ul>
-<li>モデルがデータにどれほど適合しているかを測定するための関数</li>
-</ul></li>
-<li>モデルの複雑さ
-<ul>
-<li>モデルの能力を表し、どの程度までデータの複雑性を捉えることができるかを定義し</li>
-</ul></li>
-<li>モデル選択
-<ul>
-<li>異なるモデルやハイパーパラメータの中から最適なものを選択する方法</li>
-</ul></li>
-<li>正則化
-<ul>
-<li>過適合を防ぐために誤差関数にペナルティ項を加える方法</li>
-</ul></li>
-<li>汎化能力の評価
-<ul>
-<li>モデルが未知のデータに対してどれだけうまく機能するかを評価するための方法</li>
-</ul></li>
+<li>誤差関数</li>
+<li>最小二乗法</li>
+<li>正則化</li>
+<li>ハイパーパラメータ</li>
+<li>クロスバリデーション</li>
 </ul>
+<p>正則化の項で、モデルの複雑さを制御するパラメータについて説明します<br>
+このようなパラメータについて、実際にPJで利用しているパラメータを確認します</p>
 <section id="合成データ" class="level1">
 <h1>合成データ</h1>
-<p>以下に、今回利用するデータセットである観測点xと観測値tの10組のペア<span class="math inline">\(\{(x_n, t_n)\}^{10}_{n=1}\)</span>を示します</p>
-<ul>
-<li>xは0&lt;x&lt;1を10等分した点</li>
-</ul>
-<div id="25ca0f7f" class="cell" data-execution_count="1">
+<p>以下に、今回利用するデータセットである観測点xと観測値tの10組のペア<span class="math inline">\(\{(x_n, t_n)\}^{10}_{n=1}\)</span>を示します<br>
+xは0&lt;x&lt;1を10等分した点です</p>
+<div id="71da8087" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> math</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="im">from</span> numpy.random <span class="im">import</span> normal</span>
@@ -273,7 +262,7 @@ window.Quarto = {
 <span id="cb1-13"><a href="#cb1-13"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>x: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-t: ['0.14', '1.06', '1.13', '0.81', '0.40', '0.49', '-0.94', '-0.42', '-0.83', '-0.47']</code></pre>
+t: ['-0.10', '0.75', '0.90', '1.09', '0.16', '0.29', '-0.91', '-0.94', '-1.02', '-0.75']</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -283,8 +272,8 @@ t: ['0.14', '1.06', '1.13', '0.81', '0.40', '0.49', '-0.94', '-0.42', '-0.83', '
 </div>
 </div>
 </div>
-<p>観測値は、以下のようにsin波に正規分布の乱数を加えて作成しています</p>
-<div id="786dda09" class="cell" data-execution_count="2">
+<p>観測値は、以下のようにsin波に標準偏差0.3の正規分布から乱数を発生させて加えています</p>
+<div id="499002ee" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
@@ -302,8 +291,13 @@ t: ['0.14', '1.06', '1.13', '0.81', '0.40', '0.49', '-0.94', '-0.42', '-0.83', '
 </div>
 </div>
 </div>
-<p>回帰分析の１つである最小二乗法を説明します</p>
-<p>回帰分析では、tとxの関係を表す関数を推測することを目的とし、それを用いて未知のデータに対して予測を行います</p>
+<p>xを説明変数もしくは特徴量といい、tを目的変数と言います</p>
+</section>
+<section id="回帰分析" class="level1">
+<h1>回帰分析</h1>
+<p>以下では上のデータを用いて回帰分析について説明します<br>
+今回はモデルを決定する方法の１つである最小二乗法を用います</p>
+<p>回帰分析では、目的変数tと説明変数xの関係を表す関数を推測することを目的とし、それを用いて未知のデータに対して予測を行います</p>
 </section>
 <section id="最小二乗法" class="level1">
 <h1>最小二乗法</h1>
@@ -312,37 +306,37 @@ t: ['0.14', '1.06', '1.13', '0.81', '0.40', '0.49', '-0.94', '-0.42', '-0.83', '
 <p>データはsin関数から生成していますが、そのことは知らないものとしてxとtの関数として多項式を仮定します</p>
 <section id="多項式近似" class="level2">
 <h2 class="anchored" data-anchor-id="多項式近似">多項式近似</h2>
-<p>特徴量xと目的変数tの間に多項式の関係があると仮定します <span class="math display">\[\begin{align}
-  f(x) &amp; = \omega_0 + \omega_1x + \omega_2x^2 + \cdots + \omega_Mx^M \\
-       &amp; = \sum_{m=0}^{M}w_mx^m
-\end{align}\]</span></p>
+<p>特徴量xと目的変数tの間に多項式の関係があると仮定します <!-- \begin{align} 
+  f(x) & = \omega_0 + \omega_1x + \omega_2x^2 + \cdots + \omega_Mx^M \\
+       & = \sum_{m=0}^{M}w_mx^m
+\end{align} --> <img src="./img/math/equation1.png" class="img-fluid"></p>
 <p>Mは多項式の次数で、モデルの複雑さに関係します</p>
 <p>どのような値に決めると良いかは後ほど議論します</p>
 </section>
 <section id="誤差" class="level2">
 <h2 class="anchored" data-anchor-id="誤差">誤差</h2>
-<p>多項式で計算される値<span class="math inline">\(f(x)\)</span>と実際に観測された値<span class="math inline">\(t_n\)</span>の差の二乗を全てのデータについて和をとったものを誤差と言います</p>
-<p><span class="math display">\[\begin{align}
-E &amp; = \frac{1}{2} \left( (f(x_1) - t_1)^2 + (f(x_2) - t_2)^2 + \cdots + (f(x_{10}) - t_{10})^2 \right) \\
-  &amp; = \frac{1}{2} \sum_{n=1}^{N}(f(x_n) - t_n)^2 \\
-  &amp; = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2
-\end{align}\]</span></p>
+<p>モデルにより計算される値と実際に観測された値の差を表す関数を誤差と言います</p>
+<p>今回は、多項式で計算される値<span class="math inline">\(f(x)\)</span>と実際に観測された値<span class="math inline">\(t_n\)</span>の差の二乗を全てのデータについて和をとったものを誤差として利用し、特にこのような誤差を平均二乗誤差（Root Mean Squared Error）と言います。</p>
+<!-- \begin{align}
+E & = \frac{1}{2} \left( (f(x_1) - t_1)^2 + (f(x_2) - t_2)^2 + \cdots + (f(x_{10}) - t_{10})^2 \right) \\
+  & = \frac{1}{2} \sum_{n=1}^{N}(f(x_n) - t_n)^2 \\
+  & = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2 
+\end{align} -->
+<p><img src="./img/math/equation2.png" class="img-fluid"></p>
 <p><img src="img/Figure_5.png" class="img-fluid"></p>
-<p>次項以降以下の誤差関数を利用します <span id="eq-error"><span class="math display">\[
-E = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2
-\tag{1}\]</span></span></p>
-<p>誤差関数 <a href="#eq-error" class="quarto-xref">Equation&nbsp;1</a> が大きいということは、多項式が実際の観測値を表現できていないことになります</p>
+<p>誤差関数が大きいということは、多項式が実際の観測値を表現できていないことになります</p>
 <p>逆に、誤差関数を最小になれば、多項式は実際の観測値を推測できるということになります</p>
 <p>そのために、誤差関数を最小にするような多項式の係数<span class="math inline">\(w\)</span>を求めることが目的になります</p>
 </section>
 <section id="最小二乗法-1" class="level2">
 <h2 class="anchored" data-anchor-id="最小二乗法-1">最小二乗法</h2>
-<p>上で述べた、誤差を最小化する係数を求める方法を誤差関数 <a href="#eq-error" class="quarto-xref">Equation&nbsp;1</a> が二乗の形式で表されていることから、最小二乗法と言います</p>
+<p>上で述べた、誤差を最小化する係数を求める方法を誤差関数が二乗の形式で表されていることから、最小二乗法と言います</p>
 <p>具体的には、以下の偏微分方程式を解きます</p>
-<p><span id="eq-partial-differencial-equation"><span class="math display">\[
+<!-- \begin{align}
 \frac{\partial E}{\partial w_m} = 0 \quad (m = 0, \cdots , M)
-\tag{2}\]</span></span></p>
-<p>今回はこの式を解くことはせず、#eq-partial-differencial-equation を解いた結果多項式を最小にする係数<span class="math inline">\({w}\)</span>が得られているものとして話を進めます</p>
+\end{align} -->
+<p><img src="./img/math/equation3.png" class="img-fluid"></p>
+<p>今回はこの式を解くことはせずに上式を解いた結果、多項式を最小にする係数<span class="math inline">\({w}\)</span>が得られているものとして話を進めます</p>
 <p>TensorFlow, PyTorchといったライブラリでは、自動微分という機能が搭載されており、ユーザーが関数を指定するだけで内部的に偏微分の計算を行なってくれます</p>
 </section>
 </section>
@@ -372,65 +366,9 @@ E = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2
 </ul></li>
 </ul>
 </section>
-<section id="トレーニングデータとテストデータ" class="level2">
-<h2 class="anchored" data-anchor-id="トレーニングデータとテストデータ">トレーニングデータとテストデータ</h2>
-<p>上のM=9の場合では学習データに対してはよくフィットしますが、未知のデータに対してフィットしないと思われます</p>
-<p>このことを確認するために、事前に得られたデータをトレーニングデータとテストデータに分けておき学習はトレーニングデータのみを利用して行い、未知データへの当てはまりは、テストデータを用いて確認します</p>
-</section>
-<section id="統計モデルとdeeplearning" class="level2">
-<h2 class="anchored" data-anchor-id="統計モデルとdeeplearning">統計モデルとDeepLearning</h2>
-<p>データセットが大きくなると、より複雑なモデルを使用しても過適合の問題が軽減されます</p>
-<p>統計学では、パラメータの信頼性の高い推定を確保するためモデルのパラメータ数よりも多くのデータ点が必要とされることが一般的です<br>
-一方ディープラーニングでは、パラメータ数が非常に多いモデルを使用しても、大量のデータが利用できる場合には、非常に高い性能を達成することが可能です<br>
-この違いは、ディープラーニングが複雑なパターンを学習する能力と、大規模なデータセットから情報を抽出する能力に由来します</p>
-<p>以下は、次数M=9でデータが少ない場合と多い場合を比較したものです</p>
-<p>N = 15 <img src="img/Figure_8_a.png" class="img-fluid"></p>
-<p>N = 100 <img src="img/Figure_8_b.png" class="img-fluid"></p>
-<p>次数が高い場合でもデータが多ければ、特徴量と目的変数の関係が捉えられています</p>
-</section>
-<section id="モデルの汎化性能の評価" class="level2">
-<h2 class="anchored" data-anchor-id="モデルの汎化性能の評価">モデルの汎化性能の評価</h2>
-<ul>
-<li>テストセットでの評価の重要性
-<ul>
-<li>多項式の次数 <span class="math inline">\(M\)</span> により汎化性能が変化</li>
-<li>テストセットで未見データのモデル挙動を観察</li>
-</ul></li>
-<li>性能評価方法
-<ul>
-<li>テストセット上で <span class="math inline">\(E(w^*)\)</span> を計算</li>
-<li><span class="math inline">\(E(w^*)\)</span> はテストデータ適合度を示す</li>
-<li>小さい<span class="math inline">\(E(w^*)\)</span>は高い汎化性能を意味</li>
-</ul></li>
-<li>平均二乗根誤差（RMS Error）
-<ul>
-<li>計算式: <span class="math display">\[\text{RMS Error} = \sqrt{\frac{1}{N} \sum_{n=1}^{N} (y(x_n, w^*) - t_n)^2}\]</span></li>
-<li>N: テストデータ数</li>
-<li><span class="math inline">\(y(x_n, w^*)\)</span>: 予測値, <span class="math inline">\(t_n\)</span>: 実際の目標値</li>
-<li>RMSエラーが小さいほど予測精度が高い</li>
-</ul></li>
-<li>性能評価の視覚化
-<ul>
-<li>図1.7: <span class="math inline">\(M\)</span>の異なる値でのトレーニングセットとテストセットの RMS エラーをグラフ化
-<ul>
-<li><img src="img/Figure_7.png" class="img-fluid"></li>
-</ul></li>
-<li>Mが高い場合の過適合とその影響を視覚的に表示</li>
-<li>M = 3が最もバランスがよい</li>
-</ul></li>
-</ul>
-</section>
-</section>
-<section id="正則化" class="level1">
-<h1>正則化</h1>
-<p>上では、データの数によりフィティングの性能が変わるということをみました</p>
-<p>以下では別の方法として、正則化により過適合を避ける方法を確認します</p>
-<section id="正則化とは" class="level2">
-<h2 class="anchored" data-anchor-id="正則化とは">正則化とは</h2>
-<ul>
-<li>モデルのパラメータ数を単に制限する代わりに、問題の複雑さに合わせてモデルの複雑さを調整する方法です</li>
-<li>正則化は、誤差関数にペナルティ項を追加することで、係数の大きさを抑制し、過適合を防ぎます</li>
-</ul>
+<section id="モデルの次数と計数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="モデルの次数と計数の関係">モデルの次数と計数の関係</h2>
+<p>モデルの次数と計数の関係は以下のようになります</p>
 <table class="table">
 <colgroup>
 <col style="width: 16%">
@@ -522,18 +460,80 @@ E = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2
 </tbody>
 </table>
 <p>M=9の場合、係数が大きいことがわかります</p>
+</section>
+<section id="トレーニングデータとテストデータ" class="level2">
+<h2 class="anchored" data-anchor-id="トレーニングデータとテストデータ">トレーニングデータとテストデータ</h2>
+<p>次数M=9の場合、多項式はトレーニングデータに対してはよくフィットしますが、未知のデータに対してフィットしないと思われます</p>
+<p>このことを確認するために、トレーニングデータとテストデータを分割する方法が用いられます</p>
+<p>事前に得られたデータをトレーニングデータとテストデータに分けておき学習はトレーニングデータのみを利用して行い、未知データへの当てはまりは、テストデータを用いて確認します</p>
+</section>
+<section id="データ数と次数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="データ数と次数の関係">データ数と次数の関係</h2>
+<p>以下は、次数M=9でデータが少ない場合と多い場合を比較したものです</p>
+<p>N = 15 <img src="img/Figure_8_a.png" class="img-fluid"></p>
+<p>N = 100 <img src="img/Figure_8_b.png" class="img-fluid"></p>
+<p>次数が高い場合でもデータが多ければ、特徴量と目的変数の関係が捉えられています</p>
+</section>
+<section id="モデルの汎化性能の評価" class="level2">
+<h2 class="anchored" data-anchor-id="モデルの汎化性能の評価">モデルの汎化性能の評価</h2>
+<p>汎化性能とは、トレーニングデータで利用していない未知のデータに対する予測性能のことを言います<br>
+先ほど見た通り、多項式の次数 <span class="math inline">\(M\)</span> により汎化性能が変化します<br>
+このことを確認するために、テストセットで未見データのモデル挙動を観察します</p>
+<ul>
+<li><p>性能評価方法 テストセット上で <span class="math inline">\(E(w^*)\)</span> を計算します<br>
+誤差<span class="math inline">\(E(w^*)\)</span> はテストデータ適合度を示し、小さい<span class="math inline">\(E(w^*)\)</span>は高い汎化性能を意味します</p></li>
+<li><p>平均二乗根誤差（RMS Error）</p></li>
+</ul>
+<!-- \begin{align}
+\text{RMS Error} = \sqrt{\frac{1}{N} \sum_{n=1}^{N} (y(x_n, w^*) - t_n)^2}
+\end{align} -->
+<p><img src="./img/math/equation4.png" class="img-fluid"></p>
+<ul>
+<li>N: テストデータ数</li>
+<li><span class="math inline">\(y(x_n, w^*)\)</span>: 予測値, <span class="math inline">\(t_n\)</span>: 実際の目標値</li>
+</ul>
+<p>RMSエラーが小さいほど予測精度が高いことを意味します</p>
+<ul>
+<li>性能評価の視覚化
+<ul>
+<li>図1.7: <span class="math inline">\(M\)</span>の異なる値でのトレーニングセットとテストセットの誤差をグラフ化 <img src="img/Figure_7.png" class="img-fluid"></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="正則化" class="level1">
+<h1>正則化</h1>
+<p>上では、データの数によりフィティングの性能が変わるということをみました<br>
+以下では別の方法として、正則化により過適合を避ける方法を確認します</p>
+<section id="正則化とは" class="level2">
+<h2 class="anchored" data-anchor-id="正則化とは">正則化とは</h2>
+<ul>
+<li>モデルのパラメータ数を単に制限する代わりに、問題の複雑さに合わせてモデルの複雑さを調整する方法です</li>
+<li>正則化は、誤差関数にペナルティ項を追加することで、係数の大きさを抑制し、過適合を防ぎます</li>
+</ul>
 <p>正則化は、大きな係数に対して誤差のペナルティを課す方法で、誤差関数に対して係数の大きさに応じた項を加えることで実現します</p>
 </section>
 <section id="正則化の方法" class="level2">
 <h2 class="anchored" data-anchor-id="正則化の方法">正則化の方法</h2>
 <p>正則化された誤差関数は次のように表されます</p>
-<p><span class="math display">\[E_{\text{reg}}(w) = \sum_{n=1}^{N} (y(x_n, w) - t_n)^2 + \lambda \sum_{j=0}^{M} w_j^2\]</span></p>
-<p>ここで <span class="math inline">\(\lambda\)</span> は正則化の強さを調整するパラメータ</p>
+<!-- \begin{align}
+E_{\text{reg}}(w) = \sum_{n=1}^{N} (y(x_n, w) - t_n)^2 + \lambda \sum_{j=0}^{M} w_j^2
+\end{align} -->
+<p><img src="./img/math/equation5.png" class="img-fluid"></p>
+<p>ここで <span class="math inline">\(\lambda\)</span> は正則化の強さを調整するパラメータです</p>
+</section>
+<section id="ハイパーパラメータ" class="level2">
+<h2 class="anchored" data-anchor-id="ハイパーパラメータ">ハイパーパラメータ</h2>
+<p><span class="math inline">\(\lambda\)</span>やMは、最小二乗法により多項式の係数<span class="math inline">\(\omega\)</span>を計算する際には固定します</p>
+<p>これらのパラメータの値は、テストデータの誤差を最小にするものに決定します</p>
+<p>このようなパラメータのことをハイパーパラメータと言い、モデルによって様々なものが存在します</p>
+<p><a href="https://console.cloud.google.com/vertex-ai/experiments/locations/us-central1/experiments/two-tower-train/runs/two-tower-train-run-20240512020226/parameters?hl=ja&amp;project=hardy-tenure-240602">TwoTowerモデルでのハイパーパラメータの例</a></p>
 </section>
 <section id="正則化の効果" class="level2">
 <h2 class="anchored" data-anchor-id="正則化の効果">正則化の効果</h2>
-<p>正則化を利用することで、<span class="math inline">\(M = 9\)</span>のような高次多項式でも過適合が抑えられるようになります</p>
-<p><span class="math inline">\(\lambda\)</span> の値を調整することで、モデルの適合度と汎化能力のバランスを取ります</p>
+<p>正則化を利用することで、<span class="math inline">\(M = 9\)</span>のような高次多項式でも過適合が抑えられるようになります<br>
+<span class="math inline">\(\lambda\)</span> の値を調整することで、モデルの適合度と汎化能力のバランスを取ります<br>
+<span class="math inline">\(\ln\lambda=-\infty\)</span>の場合、<span class="math inline">\(\lambda=0\)</span>となり、正則化が行われないことを意味します</p>
 </section>
 <section id="正則化パラメータの影響" class="level2">
 <h2 class="anchored" data-anchor-id="正則化パラメータの影響">正則化パラメータの影響</h2>
@@ -551,40 +551,107 @@ E = \frac{1}{2} \sum_{n=1}^{N}(\sum_{m=0}^{M}w_mx^m - t_n)^2
 </ul>
 <p><img src="img/Figure_6_d.png" class="img-fluid"></p>
 </section>
+<section id="正則化の強さと多項式の計数の関係" class="level2">
+<h2 class="anchored" data-anchor-id="正則化の強さと多項式の計数の関係">正則化の強さと多項式の計数の関係</h2>
+<p>次数M = 9の場合の正則化パラメータと係数の関係を以下に示します</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Coefficient</th>
+<th>lnλ=-∞</th>
+<th>lnλ=-18</th>
+<th>lnλ=0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>w₀⋆</td>
+<td>0.26</td>
+<td>0.26</td>
+<td>0.11</td>
+</tr>
+<tr class="even">
+<td>w₁⋆</td>
+<td>-66.13</td>
+<td>0.64</td>
+<td>-0.07</td>
+</tr>
+<tr class="odd">
+<td>w₂⋆</td>
+<td>1,665.69</td>
+<td>43.68</td>
+<td>-0.09</td>
+</tr>
+<tr class="even">
+<td>w₃⋆</td>
+<td>-15,566.61</td>
+<td>-144.00</td>
+<td>-0.07</td>
+</tr>
+<tr class="odd">
+<td>w₄⋆</td>
+<td>76,321.23</td>
+<td>57.90</td>
+<td>-0.05</td>
+</tr>
+<tr class="even">
+<td>w₅⋆</td>
+<td>-217,389.15</td>
+<td>117.36</td>
+<td>-0.04</td>
+</tr>
+<tr class="odd">
+<td>w₆⋆</td>
+<td>370,626.48</td>
+<td>9.87</td>
+<td>-0.02</td>
+</tr>
+<tr class="even">
+<td>w₇⋆</td>
+<td>-372,051.47</td>
+<td>-90.02</td>
+<td>-0.01</td>
+</tr>
+<tr class="odd">
+<td>w₈⋆</td>
+<td>202,540.70</td>
+<td>-70.90</td>
+<td>-0.01</td>
+</tr>
+<tr class="even">
+<td>w₉⋆</td>
+<td>-46,080.94</td>
+<td>75.26</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\ln\lambda=-\infty\)</span>(正則化なし)の場合は係数の値が大きく、逆に<span class="math inline">\(\ln\lambda=0\)</span>の場合は係数の値が小さいことが分かります</p>
+</section>
 <section id="正則化による汎化性能の可視化" class="level2">
 <h2 class="anchored" data-anchor-id="正則化による汎化性能の可視化">正則化による汎化性能の可視化</h2>
 <p>訓練データとテストデータにおける平均二乗根誤差（RMSエラー）を 正則化の強さ<span class="math inline">\(\ln\lambda\)</span>に対してプロット</p>
 <p>以下の図はRMSエラーの <span class="math inline">\(\ln(\lambda)\)</span>に対するグラフで、正則化の強さが汎化エラーに与える影響を示します <img src="img/Figure_10.png" class="img-fluid"></p>
 <p>正則化が強いほど汎化性能は上がりますが、強すぎるとデータの適合度が損なわれます</p>
-<p>(ここまで)</p>
 </section>
 <section id="ハイパーパラメータの調整" class="level2">
 <h2 class="anchored" data-anchor-id="ハイパーパラメータの調整">ハイパーパラメータの調整</h2>
-<ul>
-<li><span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> を最適化するためには、訓練データとは別に検証データセットを用いることが一般的です。</li>
-<li>適切な <span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> の値を見つけるためには、検証セット上でのエラーが最も低いモデルを選択します</li>
-</ul>
+<p>これまで、テストデータセットでハイパーパラメータ <span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> の性能を確認しました しかし、ハイパーパラメータを最適化するためには、テストデータとは別に検証データセットを用意することが一般的です 適切な <span class="math inline">\(\lambda\)</span> や <span class="math inline">\(M\)</span> の値を見つけるためには、検証セット上でのエラーが最も低いモデルを選択します その後、テストデータを用いて最終的なモデルの評価を行います</p>
 </section>
-<section id="検証セットとクロスバリデーション" class="level2">
-<h2 class="anchored" data-anchor-id="検証セットとクロスバリデーション">検証セットとクロスバリデーション</h2>
-<ul>
-<li>データを訓練セットと検証セットに分け、検証セットを使用してモデルの汎化能力を評価します</li>
-<li>クロスバリデーションは、データを複数のサブセットに分け、それぞれのサブセットでモデルを訓練し、残りのサブセットでテストすることで、モデルの汎化性能を確認します</li>
-</ul>
+<section id="検証データセットとクロスバリデーション" class="level2">
+<h2 class="anchored" data-anchor-id="検証データセットとクロスバリデーション">検証データセットとクロスバリデーション</h2>
+<p>データをトレーニングセットと検証データセットに分け、検証セットを使用してモデルの汎化能力を評価します<br>
+クロスバリデーションは、データを複数のサブセットに分け、それぞれのサブセットでモデルを訓練し、残りのサブセットでテストすることで、モデルの汎化性能を確認します</p>
 </section>
 <section id="クロスバリデーションの手法" class="level2">
 <h2 class="anchored" data-anchor-id="クロスバリデーションの手法">クロスバリデーションの手法</h2>
-<ul>
-<li>S-foldクロスバリデーションでは、データを <span class="math inline">\(S\)</span> グループに分け、<span class="math inline">\(S-1\)</span> グループを使用して訓練し、残った1グループで性能を評価します。このプロセスを繰り返して、平均的なモデル性能を得ます</li>
-</ul>
-<p><img src="img/Figure_11.png" class="img-fluid"></p>
+<p>S-foldクロスバリデーションでは、データを <span class="math inline">\(S\)</span> グループに分け、<span class="math inline">\(S-1\)</span> グループを使用して訓練し、残った1グループで性能を評価します。このプロセスを繰り返して、平均的なモデル性能を得ます<br>
+以下の図における赤い部分が検証データを表します <img src="img/Figure_11.png" class="img-fluid"></p>
 </section>
 <section id="ハイパーパラメータの課題" class="level2">
 <h2 class="anchored" data-anchor-id="ハイパーパラメータの課題">ハイパーパラメータの課題</h2>
-<ul>
-<li>大規模なモデルやデータセットでは、ハイパーパラメータの選択肢が多く、最適な設定を見つけるのが困難です</li>
-<li>モデルの訓練が計算コストが高い場合、クロスバリデーションを含む多くの訓練コストが必要になることがあります</li>
-</ul>
+<p>大規模なモデルやデータセットでは、ハイパーパラメータの選択肢が多く、最適な設定を見つけるのが困難です<br>
+モデルの訓練が計算コストが高い場合、クロスバリデーションを含む多くの訓練コストが必要になることがあります</p>
 </section>
 </section>
 <section id="参考文献" class="level1">
